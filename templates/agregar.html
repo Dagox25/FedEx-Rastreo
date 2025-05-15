@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Paquete | FedEx</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Agregar Nuevo Paquete</h1>
+        <form action="/agregar" method="POST" enctype="multipart/form-data">
+            <label>Número de Seguimiento:</label>
+            <input type="text" name="tracking_number" required>
+
+            <label>Nombre del Cliente:</label>
+            <input type="text" name="nombre" required>
+
+            <label>Estado:</label>
+            <select name="estado" required>
+                <option value="En tránsito">En tránsito</option>
+                <option value="Retenido">Retenido</option>
+                <option value="Entregado">Entregado</option>
+            </select>
+
+            <label>País de Origen:</label>
+            <input type="text" name="pais_origen" required>
+
+            <label>País Destino:</label>
+            <input type="text" name="pais_destino" required>
+
+            <label>Dirección:</label>
+            <input type="text" name="direccion" required>
+
+            <label>Responsable:</label>
+            <input type="text" name="responsable" required>
+
+            <label>Notas:</label>
+            <textarea name="notas"></textarea>
+
+            <label>Foto (opcional):</label>
+            <input type="file" name="foto">
+
+            <button type="submit">Agregar Paquete</button>
+        </form>
+    </div>
+</body>
+</html>

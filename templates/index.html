@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>FedEx Rastreo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      text-align: center;
+    }
+    .logo {
+      margin-top: 40px;
+    }
+    .form-container {
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4d148c;
+      color: white;
+      border: none;
+    }
+    .resultado {
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      display: inline-block;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="{{ url_for('static', filename='fedex_logo.png') }}" alt="FedEx Logo" width="200">
+  </div>
+  <div class="form-container">
+    <form method="POST">
+      <input type="text" name="numero" placeholder="Introduce tu número de rastreo" required>
+      <button type="submit">Rastrear</button>
+    </form>
+    {% if error %}
+      <p style="color: red;">{{ error }}</p>
+    {% endif %}
+  </div>
+
+  {% if datos %}
+  <div class="resultado">
+    <h3>Información del Paquete</h3>
+    <p><strong>Número:</strong> {{ datos.numero }}</p>
+    <p><strong>Nombre:</strong> {{ datos.nombre }}</p>
+    <p><strong>Estado:</strong> {{ datos.estado }}</p>
+    <p><strong>País Origen:</strong> {{ datos.pais_origen }}</p>
+    <p><strong>País Destino:</strong> {{ datos.pais_destino }}</p>
+    <p><strong>Dirección:</strong> {{ datos.direccion }}</p>
+    <p><strong>Responsable:</strong> {{ datos.responsable }}</p>
+    <p><strong>Fecha de Envío:</strong> {{ datos.fecha_envio }}</p>
+    <p><strong>Última Actualización:</strong> {{ datos.ultima_actualizacion }}</p>
+  </div>
+  {% endif %}
+</body>
+</html>
