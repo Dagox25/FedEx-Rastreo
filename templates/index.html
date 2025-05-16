@@ -3,65 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <title>FedEx Rastreo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
-      text-align: center;
+      min-height: 100vh;
+      background: #4d148c url('{{ url_for("static", filename="img/background.jpg") }}') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
     }
     .logo {
       margin-top: 40px;
+      text-align: center;
+    }
+    .logo img {
+      width: 180px;
+      display: block;
+      margin: 0 auto 30px auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px #0002;
+      padding: 10px;
+    }
+    .main-title {
+      font-size: 2.4em;
+      color: white;
+      font-weight: bold;
+      margin-bottom: 0.5em;
+      letter-spacing: 1px;
+      text-align: center;
+      text-shadow: 0 2px 12px #0006;
+    }
+    .fedex-bg-title {
+      font-size: 6vw;
+      font-weight: bold;
+      color: #fff;
+      opacity: 0.18;
+      position: absolute;
+      left: 0; right: 0;
+      top: 32vh;
+      text-align: center;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
     }
     .form-container {
-      margin-top: 20px;
+      z-index: 2;
+      position: relative;
+      text-align: center;
+      margin-top: 1.5em;
     }
-    input[type="text"] {
-      padding: 10px;
-      width: 300px;
+    .form-box {
+      display: inline-block;
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px 25px 18px 25px;
+      box-shadow: 0 2px 24px #0002;
+      min-width: 280px;
+      margin-bottom: 24px;
+    }
+    .form-box input[type="text"] {
+      padding: 12px;
+      width: 230px;
       border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 9px;
+      font-size: 1em;
     }
-    button {
-      padding: 10px 20px;
-      background-color: #4d148c;
+    .form-box button {
+      padding: 12px 28px;
+      background-color: #ff6600;
       color: white;
       border: none;
+      border-radius: 4px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .form-box button:hover {
+      background: #f70;
+    }
+    .error-msg {
+      color: #c00;
+      margin-top: 12px;
+      background: #fff3f3;
+      border-radius: 6px;
+      padding: 8px 0;
     }
     .resultado {
-      margin-top: 30px;
-      background: white;
-      padding: 20px;
-      display: inline-block;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px #0003;
+      max-width: 400px;
+      margin: 30px auto;
+      padding: 24px 24px 18px 24px;
+      z-index: 3;
+      position: relative;
+      font-size: 1.08em;
       text-align: left;
+    }
+    .verinfo-btn, .verinfo-btn:visited {
+      display: inline-block;
+      margin-top: 12px;
+      background: #4d148c;
+      color: white;
+      padding: 7px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
+    .verinfo-btn:hover {
+      background: #ff6600;
+      color: white;
+    }
+    .pie {
+      margin-top: auto;
+      padding: 18px 0 12px 0;
+      background: rgba(255,255,255,0.85);
+      color: #4d148c;
+      font-size: 0.98em;
+      text-align: center;
+      letter-spacing: 0.5px;
+      border: none;
+    }
+    @media (max-width: 600px) {
+      .main-title { font-size: 1.3em; }
+      .fedex-bg-title { font-size: 12vw; top: 26vh;}
+      .form-box { padding: 10px 4vw; min-width: 0; }
+      .resultado { padding: 13px 2vw 14px 2vw; }
     }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="{{ url_for('static', filename='fedex_logo.png') }}" alt="FedEx Logo" width="200">
+    <img src="{{ url_for('static', filename='img/fedex_logo.jpeg') }}" alt="FedEx Logo">
   </div>
+  <div class="main-title">Rastreo de Paquetes</div>
+  <div class="fedex-bg-title">FedEx</div>
   <div class="form-container">
-    <form method="POST">
-      <input type="text" name="numero" placeholder="Introduce tu número de rastreo" required>
-      <button type="submit">Rastrear</button>
-    </form>
-    {% if error %}
-      <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    <div class="form-box">
+      <form method="POST">
+        <input type="text" name="numero" placeholder="Ingresa tu número de rastreo" required>
+        <button type="submit">Rastrear</button>
+      </form>
+      {% if error %}
+        <div class="error-msg">{{ error }}</div>
+      {% endif %}
+    </div>
   </div>
-
   {% if datos %}
   <div class="resultado">
-    <h3>Información del Paquete</h3>
+    <h3 style="color:#4d148c;">Información del Paquete</h3>
     <p><strong>Número:</strong> {{ datos.numero }}</p>
     <p><strong>Nombre:</strong> {{ datos.nombre }}</p>
-    <p><strong>Estado:</strong> {{ datos.estado }}</p>
-    <p><strong>País Origen:</strong> {{ datos.pais_origen }}</p>
-    <p><strong>País Destino:</strong> {{ datos.pais_destino }}</p>
-    <p><strong>Dirección:</strong> {{ datos.direccion }}</p>
-    <p><strong>Responsable:</strong> {{ datos.responsable }}</p>
-    <p><strong>Fecha de Envío:</strong> {{ datos.fecha_envio }}</p>
+    <p><strong>Estado:</strong> 
+      <span style="color:
+        {% if datos.estado == 'Retenido' %}#e74c3c
+        {% elif datos.estado == 'En tránsito' %}#4d148c
+        {% elif datos.estado == 'Entregado' %}#27ae60
+        {% else %}#222{% endif %};
+        font-weight: bold;">
+        {{ datos.estado }}
+      </span>
+    </p>
     <p><strong>Última Actualización:</strong> {{ datos.ultima_actualizacion }}</p>
+    <a class="verinfo-btn" href="{{ url_for('ver_info', numero=datos.numero) }}">Ver información de paquete</a>
   </div>
   {% endif %}
+  <div class="pie">
+    © Todos los derechos reservados por FedEx | Normativas internacionales
+  </div>
 </body>
 </html>

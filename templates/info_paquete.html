@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Información Detallada del Paquete</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #4d148c;
+      color: #222;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .container {
+      background: rgba(255,255,255,0.97);
+      border-radius: 15px;
+      box-shadow: 0 4px 24px #0003;
+      max-width: 460px;
+      margin: 48px auto 0 auto;
+      padding: 34px 28px 24px 28px;
+      position: relative;
+    }
+    /* Barra de progreso vertical estilo FedEx */
+    .fedex-timeline {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      margin-top: 14px;
+      position: relative;
+      min-height: 280px;
+    }
+    .fedex-step {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      margin-bottom: 0;
+      min-height: 60px;
+    }
+    .fedex-step:last-child {
+      margin-bottom: 0;
+    }
+    .fedex-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid #4d148c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+      color: #4d148c;
+      position: relative;
+      z-index: 2;
+      margin-right: 12px;
+    }
+    .fedex-step.active .fedex-circle {
+      background: #4d148c;
+      color: #fff;
+      border-color: #ff6600;
+    }
+    .fedex-content {
+      padding-top: 3px;
+    }
+    .fedex-status-title {
+      font-weight: bold;
+      color: #4d148c;
+      font-size: 1.04em;
+    }
+    .fedex-status-detail {
+      font-size: 0.97em;
+      color: #444;
+    }
+    .fedex-status-date {
+      font-size: 0.93em;
+      color: #888;
+      font-style: italic;
+      margin-top: 2px;
+    }
+    .fedex-line {
+      width: 4px;
+      background: #e0e0e0;
+      height: 34px;
+      margin: 0 15px;
+      border-radius: 2px;
+      position: relative;
+      left: 15px;
+      z-index: 1;
+    }
+    .fedex-step.active ~ .fedex-line {
+      background: #4d148c;
+    }
+    .info-row {
+      margin-bottom: 12px;
+    }
+    .info-label {
+      font-weight: bold;
+      color: #4d148c;
+    }
+    .estado-envio {
+      font-weight: bold;
+      color: #e74c3c;
+      margin-top: 20px;
+      font-size: 1.12em;
+    }
+    .detalle-retenido {
+      background: #fff3f3;
+      border-left: 5px solid #e74c3c;
+      border-radius: 6px;
+      margin: 10px 0 18px 0;
+      padding: 13px 16px;
+      color: #b60000;
+      font-size: 1em;
+    }
+    .img-paquete {
+      display: block;
+      max-width: 85%;
+      margin: 18px auto 10px auto;
+      border-radius: 8px;
+      box-shadow: 0 1px 10px #0002;
+    }
+    .volver {
+      display: block;
+      margin: 28px auto 0 auto;
+      background: #4d148c;
+      color: #fff;
+      text-decoration: none;
+      padding: 11px 30px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.05em;
+      transition: background 0.25s;
+      width: fit-content;
+    }
+    .volver:hover {
+      background: #ff6600;
+      color: #fff;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 18px 3vw 18px 3vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Información del Paquete</h2>
+
+    <!-- Barra de progreso vertical estilo FedEx -->
+    <div class="fedex-timeline">
+      <div class="fedex-step {% if datos.estado in ['En tránsito','Retenido','Entregado'] %}active{% endif %}">
+        <div class="fedex-circle"><span>&#10140;</span></div>
+        <div class="fedex-content">
+          <div class="fedex-status-title">Etiqueta creada</div>
+          <div class="fedex-status-detail">Origen: {{ datos.pais_origen }}</div>
+          <div class="fedex-status-date">{{ datos.fecha_envio }}</div>
+        </div>
+      </div>
+      <div class="fedex-line"></div>
+      <div class="fedex-step {% if datos.estado in ['Retenido','Entregado'] %}active{% endif %}">
+        <div class="fedex-circle"><span>&#10140;</span></div>
+        <div class="fedex-content">
+          <div class="fedex-status-title">Tenemos tu paquete</div>
+          <div class="fedex-status-detail">Responsable: {{ datos.responsable }}</div>
+        </div>
+      </div>
+      <div class="fedex-line"></div>
+      <div class="fedex-step {% if datos.estado == 'Entregado' %}active{% endif %}">
+        <div class="fedex-circle"><span>&#10140;</span></div>
+        <div class="fedex-content">
+          <div class="fedex-status-title">Entregado</div>
+          <div class="fedex-status-detail">Destino: {{ datos.pais_destino }}</div>
+          <div class="fedex-status-date">{{ datos.ultima_actualizacion }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-row"><span class="info-label">Número:</span> {{ datos.numero }}</div>
+    <div class="info-row"><span class="info-label">Nombre:</span> {{ datos.nombre }}</div>
+    <div class="info-row"><span class="info-label">Estado:</span> 
+      <span style="color:
+        {% if datos.estado == 'Retenido' %}#e74c3c
+        {% elif datos.estado == 'En tránsito' %}#4d148c
+        {% elif datos.estado == 'Entregado' %}#27ae60
+        {% else %}#222{% endif %};
+        font-weight: bold;">
+        {{ datos.estado }}
+      </span>
+    </div>
+    {% if datos.estado == "Retenido" %}
+      <div class="estado-envio">Estado del envío: Retenido</div>
+      <div class="detalle-retenido">
+        Tu paquete se encuentra actualmente retenido debido a un proceso de verificación adicional o a requerimientos logísticos y/o aduanales.
+        <br><br>
+        Estamos trabajando para resolver esta situación lo antes posible. Mientras tanto, te recomendamos mantenerte en contacto tanto con el remitente del paquete como con nuestro equipo de atención al cliente para obtener actualizaciones y facilitar cualquier información o documentación que pudiera ser necesaria.
+        <br><br>
+        Agradecemos tu paciencia y comprensión. Te notificaremos en cuanto el envío esté listo para reanudarse.
+      </div>
+      {% if datos.foto %}
+        <img class="img-paquete" src="{{ url_for('static', filename='img/' + datos.foto) }}" alt="Imagen del paquete">
+      {% endif %}
+    {% endif %}
+    <div class="info-row"><span class="info-label">Tipo de paquete:</span> {{ info_paquete.tipo }}</div>
+    <div class="info-row"><span class="info-label">Enviado por:</span> {{ info_paquete.enviado_por }}</div>
+    <div class="info-row"><span class="info-label">Peso estimado:</span> {{ info_paquete.peso }} kg</div>
+    <div class="info-row"><span class="info-label">País Origen:</span> {{ datos.pais_origen }}</div>
+    <div class="info-row"><span class="info-label">País Destino:</span> {{ datos.pais_destino }}</div>
+    <div class="info-row"><span class="info-label">Dirección:</span> {{ datos.direccion }}</div>
+    <div class="info-row"><span class="info-label">Responsable:</span> {{ datos.responsable }}</div>
+    <div class="info-row"><span class="info-label">Fecha de Envío:</span> {{ datos.fecha_envio }}</div>
+    <div class="info-row"><span class="info-label">Última Actualización:</span> {{ datos.ultima_actualizacion }}</div>
+    <a class="volver" href="{{ url_for('home') }}">Volver al rastreo</a>
+  </div>
+</body>
+</html>
