@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>FedEx Rastreo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body {
       margin: 0;
@@ -95,30 +97,81 @@
     }
     .resultado {
       background: #fff;
-      border-radius: 14px;
+      border-radius: 28px;
       box-shadow: 0 4px 24px #0003;
-      max-width: 400px;
-      margin: 30px auto;
-      padding: 24px 24px 18px 24px;
+      max-width: 700px;
+      margin: 30px auto 30px auto;
+      padding: 40px 38px 38px 38px;
       z-index: 3;
       position: relative;
-      font-size: 1.08em;
+      font-size: 1.28em;
       text-align: left;
     }
+    .resultado h3 {
+      color: #4d148c;
+      font-size: 2em;
+      font-weight: bold;
+      margin-top: 0;
+      margin-bottom: 32px;
+      letter-spacing: 1px;
+    }
+    .dato-row {
+      margin-bottom: 26px;
+      line-height: 1.35;
+    }
+    .dato-label {
+      font-weight: bold;
+      font-size: 1.11em;
+    }
+    .dato-valor {
+      font-size: 1.04em;
+      font-weight: normal;
+    }
+    .estado-label {
+      font-weight: bold;
+      font-size: 1.15em;
+    }
+    .estado-valor {
+      font-weight: bold;
+      font-size: 1.15em;
+      color: #e74c3c;
+      margin-left: 8px;
+    }
     .verinfo-btn, .verinfo-btn:visited {
-      display: inline-block;
-      margin-top: 12px;
+      display: block;
+      margin: 45px auto 0 auto;
       background: #4d148c;
       color: white;
-      padding: 7px 18px;
-      border-radius: 8px;
+      padding: 17px 36px;
+      border-radius: 20px;
       text-decoration: none;
-      font-size: 1em;
+      font-size: 1.18em;
       transition: background 0.2s;
+      width: fit-content;
+      min-width: 340px;
+      text-align: center;
+      border: none;
+      font-weight: normal;
+      box-shadow: 0 2px 12px #0001;
     }
     .verinfo-btn:hover {
       background: #ff6600;
       color: white;
+    }
+    .progreso-barra {
+      width: 100%;
+      background: #e0e0e0;
+      height: 16px;
+      border-radius: 8px;
+      margin: 12px 0 0 0;
+      position: relative;
+    }
+    .progreso-barra-inner {
+      height: 100%;
+      background: linear-gradient(90deg,#4d148c,#ff6600);
+      border-radius: 8px;
+      width: 0;
+      transition: width 1.2s;
     }
     .pie {
       margin-top: auto;
@@ -134,7 +187,8 @@
       .main-title { font-size: 1.3em; }
       .fedex-bg-title { font-size: 12vw; top: 26vh;}
       .form-box { padding: 10px 4vw; min-width: 0; }
-      .resultado { padding: 13px 2vw 14px 2vw; }
+      .resultado { padding: 13px 2vw 22px 2vw; font-size: 1em; max-width: 99vw;}
+      .verinfo-btn, .verinfo-btn:visited { min-width: 0; width: 98%; padding: 14px 6px; font-size: 1em;}
     }
   </style>
 </head>
@@ -155,25 +209,106 @@
       {% endif %}
     </div>
   </div>
+
   {% if datos %}
   <div class="resultado">
-    <h3 style="color:#4d148c;">Información del Paquete</h3>
-    <p><strong>Número:</strong> {{ datos.numero }}</p>
-    <p><strong>Nombre:</strong> {{ datos.nombre }}</p>
-    <p><strong>Estado:</strong> 
-      <span style="color:
-        {% if datos.estado == 'Retenido' %}#e74c3c
-        {% elif datos.estado == 'En tránsito' %}#4d148c
-        {% elif datos.estado == 'Entregado' %}#27ae60
-        {% else %}#222{% endif %};
-        font-weight: bold;">
+    <h3>Información del Paquete</h3>
+    <div class="dato-row"><span class="dato-label">Número:</span> <span class="dato-valor">{{ datos.numero }}</span></div>
+    <div class="dato-row"><span class="dato-label">Nombre:</span> <span class="dato-valor">{{ datos.nombre }}</span></div>
+    <div class="dato-row">
+      <span class="estado-label">Estado:</span>
+      <span class="estado-valor"
+        style="color:{% if datos.estado == 'Retenido' %}#e74c3c{% elif datos.estado == 'En tránsito' %}#4d148c{% elif datos.estado == 'Entregado' %}#27ae60{% elif datos.estado == 'En espera de pago de impuesto' %}#FF6600{% else %}#222{% endif %};">
         {{ datos.estado }}
       </span>
-    </p>
-    <p><strong>Última Actualización:</strong> {{ datos.ultima_actualizacion }}</p>
+    </div>
+    {% if datos.estado == 'En espera de pago de impuesto' %}
+      <div style="background:#fff7e6; border:1.5px solid #FF6600; border-radius:7px; padding:13px 14px 10px 14px; margin-bottom:16px; color:#FF6600; font-weight:bold;">
+        Tu paquete está pendiente de pago de impuesto aduanal. Por favor, realiza el pago para continuar con el proceso de entrega.
+      </div>
+    {% endif %}
+    <div class="dato-row"><span class="dato-label">Última Actualización:</span> <span class="dato-valor">{{ datos.ultima_actualizacion }}</span></div>
     <a class="verinfo-btn" href="{{ url_for('ver_info', numero=datos.numero) }}">Ver información de paquete</a>
   </div>
   {% endif %}
+  {% if mostrar_formulario_agregar %}
+      <div class="resultado" style="max-width: 410px; margin: 40px auto 30px auto; padding: 32px 28px 24px 28px;">
+        <h3 style="color:#4d148c; text-align:center; margin-top:0;">Agregar Nuevo Paquete</h3>
+        <form method="POST">
+          <div class="dato-row"><input type="text" name="numero_nuevo" placeholder="Número de rastreo" required style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="nombre_nuevo" placeholder="Nombre destinatario" required style="width:100%;"></div>
+          <div class="dato-row">
+            <select name="estado_nuevo" required style="width:100%;">
+              <option value="En tránsito">En tránsito</option>
+              <option value="Retenido">Retenido</option>
+              <option value="Entregado">Entregado</option>
+              <option value="En espera de pago de impuesto">En espera de pago de impuesto</option>
+            </select>
+          </div>
+          <div class="dato-row">
+            <select name="pais_origen_nuevo" required style="width:100%;">
+              <option value="España" selected>España</option>
+            </select>
+          </div>
+          <div class="dato-row">
+            <select name="pais_destino_nuevo" required style="width:100%;">
+              <option value="">Selecciona país destino</option>
+              <option value="Afganistán">Afganistán</option>
+              <option value="Alemania">Alemania</option>
+              <option value="Argentina">Argentina</option>
+              <option value="Australia">Australia</option>
+              <option value="Brasil">Brasil</option>
+              <option value="Canadá">Canadá</option>
+              <option value="Chile">Chile</option>
+              <option value="China">China</option>
+              <option value="Colombia">Colombia</option>
+              <option value="Corea del Sur">Corea del Sur</option>
+              <option value="Costa Rica">Costa Rica</option>
+              <option value="Cuba">Cuba</option>
+              <option value="Dinamarca">Dinamarca</option>
+              <option value="Ecuador">Ecuador</option>
+              <option value="Egipto">Egipto</option>
+              <option value="El Salvador">El Salvador</option>
+              <option value="Emiratos Árabes Unidos">Emiratos Árabes Unidos</option>
+              <option value="España">España</option>
+              <option value="Estados Unidos">Estados Unidos</option>
+              <option value="Francia">Francia</option>
+              <option value="Guatemala">Guatemala</option>
+              <option value="Honduras">Honduras</option>
+              <option value="India">India</option>
+              <option value="Italia">Italia</option>
+              <option value="Japón">Japón</option>
+              <option value="México">México</option>
+              <option value="Nicaragua">Nicaragua</option>
+              <option value="Noruega">Noruega</option>
+              <option value="Panamá">Panamá</option>
+              <option value="Paraguay">Paraguay</option>
+              <option value="Perú">Perú</option>
+              <option value="Polonia">Polonia</option>
+              <option value="Portugal">Portugal</option>
+              <option value="Reino Unido">Reino Unido</option>
+              <option value="República Dominicana">República Dominicana</option>
+              <option value="Rusia">Rusia</option>
+              <option value="Sudáfrica">Sudáfrica</option>
+              <option value="Suecia">Suecia</option>
+              <option value="Suiza">Suiza</option>
+              <option value="Turquía">Turquía</option>
+              <option value="Uruguay">Uruguay</option>
+              <option value="Venezuela">Venezuela</option>
+            </select>
+          </div>
+          <div class="dato-row"><input type="text" name="direccion_nuevo" placeholder="Dirección" required style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="responsable_nuevo" placeholder="Responsable" required style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="foto_nuevo" placeholder="Nombre de imagen (ej: paquete1.jpg)" style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="tipo_paquete_nuevo" placeholder="Tipo de paquete (ej: Dinero)" style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="peso_nuevo" placeholder="Peso (ej: 2.50 kg)" style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="remitente_nuevo" placeholder="Remitente completo" style="width:100%;"></div>
+          <div class="dato-row"><input type="date" name="fecha_envio_nuevo" required style="width:100%;"></div>
+          <div class="dato-row"><input type="text" name="mensaje_personalizado_nuevo" placeholder="Mensaje para el destinatario (opcional)" style="width:100%;"></div>
+          <button type="submit" style="width:100%; background:#4d148c; color:#fff; border:none; border-radius:7px; padding:13px 0; font-size:1.1em; font-weight:bold; margin-top:10px;">Guardar</button>
+        </form>
+      </div>
+      {% endif %}
   <div class="pie">
     © Todos los derechos reservados por FedEx | Normativas internacionales
   </div>

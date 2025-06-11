@@ -58,6 +58,17 @@
     button:hover {
       background: #ff6600;
     }
+    .soporte-box {
+      margin-top: 38px;
+      background: #f7f2ff;
+      border-left: 5px solid #4d148c;
+      border-radius: 10px;
+      padding: 18px 20px;
+      color: #4d148c;
+      font-size: 1.06em;
+      width: 100%;
+      box-sizing: border-box;
+    }
     @media (max-width: 600px) {
       .container {
         max-width: 96vw;
@@ -76,9 +87,57 @@
         <option value="En tránsito">En tránsito</option>
         <option value="Retenido">Retenido</option>
         <option value="Entregado">Entregado</option>
+        <option value="En espera de pago de impuesto">En espera de pago de impuesto</option>
+      </select>
+      <select name="pais_origen" required>
+        <option value="España" selected>España</option>
       </select><br>
-      <input type="text" name="pais_origen" placeholder="País de origen" required><br>
-      <input type="text" name="pais_destino" placeholder="País destino" required><br>
+      <select name="pais_destino" required>
+        <option value="">Selecciona país destino</option>
+        <option value="Afganistán">Afganistán</option>
+        <option value="Alemania">Alemania</option>
+        <option value="Argentina">Argentina</option>
+        <option value="Australia">Australia</option>
+        <option value="Brasil">Brasil</option>
+        <option value="Canadá">Canadá</option>
+        <option value="Chile">Chile</option>
+        <option value="China">China</option>
+        <option value="Colombia">Colombia</option>
+        <option value="Corea del Sur">Corea del Sur</option>
+        <option value="Costa Rica">Costa Rica</option>
+        <option value="Cuba">Cuba</option>
+        <option value="Dinamarca">Dinamarca</option>
+        <option value="Ecuador">Ecuador</option>
+        <option value="Egipto">Egipto</option>
+        <option value="El Salvador">El Salvador</option>
+        <option value="Emiratos Árabes Unidos">Emiratos Árabes Unidos</option>
+        <option value="España">España</option>
+        <option value="Estados Unidos">Estados Unidos</option>
+        <option value="Francia">Francia</option>
+        <option value="Guatemala">Guatemala</option>
+        <option value="Honduras">Honduras</option>
+        <option value="India">India</option>
+        <option value="Italia">Italia</option>
+        <option value="Japón">Japón</option>
+        <option value="México">México</option>
+        <option value="Nicaragua">Nicaragua</option>
+        <option value="Noruega">Noruega</option>
+        <option value="Panamá">Panamá</option>
+        <option value="Paraguay">Paraguay</option>
+        <option value="Perú">Perú</option>
+        <option value="Polonia">Polonia</option>
+        <option value="Portugal">Portugal</option>
+        <option value="Reino Unido">Reino Unido</option>
+        <option value="República Dominicana">República Dominicana</option>
+        <option value="Rusia">Rusia</option>
+        <option value="Sudáfrica">Sudáfrica</option>
+        <option value="Suecia">Suecia</option>
+        <option value="Suiza">Suiza</option>
+        <option value="Turquía">Turquía</option>
+        <option value="Uruguay">Uruguay</option>
+        <option value="Venezuela">Venezuela</option>
+        <!-- Puedes agregar más países si lo deseas -->
+      </select><br>
       <input type="text" name="direccion" placeholder="Dirección" required><br>
       <input type="text" name="responsable" placeholder="Responsable" required><br>
       <input type="text" name="foto" placeholder="Nombre de imagen (ej: paquete1.jpg)"><br>
@@ -86,8 +145,14 @@
       <input type="text" name="peso" placeholder="Peso (ej: 2.50 kg)"><br>
       <input type="text" name="remitente" placeholder="Remitente completo"><br>
       <input type="date" name="fecha_envio" required><br>
+      <input type="text" name="mensaje_personalizado" placeholder="Mensaje para el destinatario (opcional)"><br>
       <button type="submit">Guardar</button>
     </form>
+    <div class="soporte-box">
+      <strong>¿Necesitas ayuda?</strong><br>
+      Escríbenos a <a href="mailto:soporte@fedextracking.com">soporte@fedextracking.com</a> o llama al <b>0800-PAQUETE</b>.<br>
+      También puedes consultar las <a href="{{ url_for('home') }}">preguntas frecuentes aquí</a>.
+    </div>
   </div>
 </body>
 </html>
