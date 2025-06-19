@@ -168,7 +168,8 @@ def home():
                         'foto': paquete['foto'],
                         'fecha_envio': paquete['fecha_envio'],
                         'ultima_actualizacion': paquete['ultima_actualizacion'],
-                        'mensaje_personalizado': paquete.get('mensaje_personalizado', '')
+                        'mensaje_personalizado': paquete.get('mensaje_personalizado', ''),
+                        'impuesto': paquete.get('impuesto', None)
                     }
                     info_paquete = {
                         "tipo": paquete.get("tipo_paquete", "Dinero"),
@@ -193,6 +194,7 @@ def home():
             remitente = request.form['remitente_nuevo']
             fecha_envio = request.form['fecha_envio_nuevo']
             mensaje_personalizado = request.form.get('mensaje_personalizado_nuevo', '')
+            impuesto = request.form.get('impuesto_nuevo', None)
             ultima_actualizacion = datetime.now().isoformat()
             supabase.table("paquetes").insert({
                 "numero": numero,
@@ -208,7 +210,8 @@ def home():
                 "remitente": remitente,
                 "fecha_envio": fecha_envio,
                 "mensaje_personalizado": mensaje_personalizado,
-                "ultima_actualizacion": ultima_actualizacion
+                "ultima_actualizacion": ultima_actualizacion,
+                "impuesto": impuesto if impuesto else None
             }).execute()
             exito_agregado = True
             mostrar_formulario_agregar = False

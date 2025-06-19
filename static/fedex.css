@@ -1,0 +1,33 @@
+@media (max-width: 600px) {
+  .form-box input[type="text"], .form-box button, .dato-row input, .dato-row select {
+    font-size: 1.15em !important;
+    padding: 18px 10px !important;
+    min-height: 48px;
+  }
+  .verinfo-btn, .verinfo-btn:visited {
+    font-size: 1.15em !important;
+    padding: 18px 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .resultado, .form-box {
+    padding: 10px 2vw !important;
+  }
+  .dato-row {
+    margin-bottom: 18px !important;
+  }
+}
+
+.footer-seguro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #4d148c;
+  font-size: 1em;
+  margin-top: 8px;
+}
+.footer-seguro .icon-candado {
+  font-size: 1.2em;
+  color: #27ae60;
+}
